@@ -69,6 +69,8 @@ namespace talk2Server
             }
         }
 
+        #region view
+
         private void AddClientMessageList(ChatHub hub)
         {
             string message = hub.State switch
@@ -79,44 +81,50 @@ namespace talk2Server
             };
             lbxMsg.Items.Add(message);
         }
+        #endregion view
 
         private void Connected(object? sender, ChatEventArgs e)
         {
-            OtiLogger.log1(e.Hub.ToJsonString());
             e.ClientHandler.UsrNo = e.Hub.UsrNo;
-            OtiLogger.log1(e.ClientHandler.UsrNo);
-            if (e.Hub.RoomId == 0 && _roomManager.IsConnect(e.ClientHandler))
+            if (e.Hub.RoomId == 0) // 접속
             {
-                OtiLogger.log1("같데");
-                e.ClientHandler.Send(new ChatHub()
+                // 이미 접속상태면
+                if (_roomManager.IsConnect(e.ClientHandler))
                 {
-                    State = ChatState.ConnectFail,
-                });
-            }
-            else
-            {
-                _roomManager.Add(e.ClientHandler);
-                e.ClientHandler.ChangeConnState(ConnState.Online);
-
-                var hub = CreateNewStateChatHub(e.Hub, ChatState.Connect);
-
-                _roomManager.SendToMyRoom(hub);
-
-                if (e.Hub.RoomId == 0)
-                {
-                    ReLoadConnList();
+                    // '로그인 실패' 다시 client로 돌려줘기
+                    e.ClientHandler.Send(new ChatHub()
+                    {
+                        State = ChatState.ConnectFail,
+                    });
                 }
                 else
                 {
-                    lbxClients.Items.Add(e.Hub);
-                    AddClientMessageList(hub);
+                    _roomManager.Add(e.ClientHandler);
+                    e.ClientHandler.ChangeConnState(ConnState.Online);
+                    var hub = CreateNewStateChatHub(e.Hub, ChatState.Connect);
+                    _roomManager.SendToMyRoom(hub);
+                    
+                    // 서버 화면 표시
+                    ReLoadConnList();
                 }
+            }
+            else // 채팅
+            {
+                _roomManager.Add(e.ClientHandler);
+                e.ClientHandler.ChangeConnState(ConnState.Online);
+                var hub = CreateNewStateChatHub(e.Hub, ChatState.Connect);
+                _roomManager.SendToMyRoom(hub);
+
+                lbxClients.Items.Add(e.Hub);
+                AddClientMessageList(hub);
             }
         }
 
         private void Disconnected(object? sender, ChatEventArgs e)
         {
-            if (e is not null && e.Hub is not null && e.Hub.RoomId == 0)
+            if (e is null || e.Hub is null) return;
+
+            if (e.Hub.RoomId == 0) // 접속
             {
                 _roomManager.Remove(e.ClientHandler);
                 _roomManager.SendToMyRoom(new ChatHub
@@ -127,7 +135,7 @@ namespace talk2Server
                 });
                 ReLoadConnList();
             }
-            else if (e is not null && e.Hub is not null && e.Hub.RoomId > 0)
+            else // 채팅
             {
                 var hub = CreateNewStateChatHub(e.Hub, ChatState.Disconnect);
 
@@ -142,7 +150,7 @@ namespace talk2Server
 
         private void Received(object? sender, ChatEventArgs e)
         {
-            if (e.Hub.RoomId == 0)
+            if (e.Hub.RoomId == 0) // 접속
             {
                 if (e.Hub.State == ChatState.StateChange)
                 {
@@ -157,7 +165,7 @@ namespace talk2Server
                     ReLoadConnList();
                 }
             }
-            else
+            else // 채팅
             {
                 _roomManager.SendToMyRoom(e.Hub);
                 _roomManager.SendToMyRoom(new ChatHub()
@@ -190,6 +198,12 @@ namespace talk2Server
         private void BtnStop_Click(object? sender, EventArgs e)
         {
             _server.Stop();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (_roomManager == null) return;
+            _roomManager.printDictionary();
         }
     }
 }

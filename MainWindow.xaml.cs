@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using talkLib.Util;
 
 namespace talk2Server
 {
@@ -46,7 +47,8 @@ namespace talk2Server
             var list = _roomManager.RoomHandlersDict()[0];
             foreach (ClientHandler ch in list)
             {
-                lbxConn.Items.Add(ch.InitialData.UsrNm + "," + "온라인");
+                lbxConn.Items.Add(ch.InitialData.UsrNo + "," + ch.ConnState);
+                // lbxConn.Items.Add(ch.UsrNo + "," + ch.ConnState);
             }
         }
 
@@ -102,6 +104,7 @@ namespace talk2Server
                     _roomManager.Add(e.ClientHandler);
                     e.ClientHandler.ChangeConnState(ConnState.Online);
                     var hub = CreateNewStateChatHub(e.Hub, ChatState.Connect);
+                    hub.Data1 = _roomManager.ClientStates();
                     _roomManager.SendToMyRoom(hub);
                     
                     // 서버 화면 표시

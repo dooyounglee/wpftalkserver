@@ -9,11 +9,15 @@
     <Grid>
         <Button x:Name="btnStart" Content="Button" HorizontalAlignment="Left" Height="80" Margin="80,64,0,0" VerticalAlignment="Top" Width="160"/>
         <Button x:Name="btnStop" Content="Button" HorizontalAlignment="Left" Height="80" Margin="260,64,0,0" VerticalAlignment="Top" Width="160"/>
-        <ListBox x:Name="lbxConn" HorizontalAlignment="Left" Height="240" Margin="80,164,0,0" VerticalAlignment="Top" Width="180"/>
-        <ListBox x:Name="lbxClients" HorizontalAlignment="Left" Height="240" Margin="280,164,0,0" VerticalAlignment="Top" Width="180"/>
-        <ListBox x:Name="lbxMsg" HorizontalAlignment="Left" Height="240" Margin="480,164,0,0" VerticalAlignment="Top" Width="280"/>
+        <ListBox x:Name="lbxConn" HorizontalAlignment="Left" Height="220" Margin="80,184,0,0" VerticalAlignment="Top" Width="180"/>
+        <ListBox x:Name="lbxClients" HorizontalAlignment="Left" Height="220" Margin="280,184,0,0" VerticalAlignment="Top" Width="180"/>
+        <ListBox x:Name="lbxMsg" HorizontalAlignment="Left" Height="220" Margin="480,184,0,0" VerticalAlignment="Top" Width="280"/>
         <TextBox x:Name="IP" HorizontalAlignment="Left" Height="20" Margin="480,64,0,0" TextWrapping="Wrap" Text="127.0.0.1" VerticalAlignment="Top" Width="100"/>
         <TextBox x:Name="Port" HorizontalAlignment="Left" Height="20" Margin="600,64,0,0" TextWrapping="Wrap" Text="8080" VerticalAlignment="Top" Width="40"/>
+        <Button Content="room상태" HorizontalAlignment="Left" Height="40" Margin="480,104,0,0" VerticalAlignment="Top" Width="78" Click="Button_Click"/>
+        <Label Content="로그인" HorizontalAlignment="Left" Height="20" Margin="80,164,0,0" VerticalAlignment="Top" Width="180" FontSize="9"/>
+        <Label Content="채팅방접속" HorizontalAlignment="Left" Height="20" Margin="280,164,0,0" VerticalAlignment="Top" Width="180" FontSize="9"/>
+        <Label Content="채팅" HorizontalAlignment="Left" Height="20" Margin="480,164,0,0" VerticalAlignment="Top" Width="280" FontSize="9"/>
 
     </Grid>
 </Window>

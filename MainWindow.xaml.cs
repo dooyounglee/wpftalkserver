@@ -157,7 +157,8 @@ namespace talk2Server
             {
                 if (e.Hub.State == ChatState.StateChange)
                 {
-                    e.ClientHandler.ChangeConnState(e.Hub.connState);
+                    ClientHandler handler = _roomManager.getClientHandler(0, e.Hub.UsrNo);
+                    handler.ChangeConnState(e.Hub.connState);
                     e.Hub.Data1 = _roomManager.ClientStates();
                     _roomManager.SendToMyRoom(e.Hub);
                     ReLoadConnList();

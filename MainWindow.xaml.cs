@@ -163,6 +163,14 @@ namespace talk2Server
                     _roomManager.SendToMyRoom(e.Hub);
                     ReLoadConnList();
                 }
+                if (e.Hub.State == ChatState.ChatReload)
+                {
+                    _roomManager.SendToMyRoom(new ChatHub()
+                    {
+                        RoomId = 0,
+                        State = ChatState.ChatReload,
+                    });
+                }
                 else
                 {
                     _roomManager.SendToMyRoom(e.Hub);

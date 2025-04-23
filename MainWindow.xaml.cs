@@ -3,6 +3,7 @@ using OTILib.Handlers;
 using OTILib.Models;
 using OTILib.Sockets;
 using OTILib.Util;
+using System.IO;
 using System.Net;
 using System.Text;
 using System.Windows;
@@ -179,6 +180,9 @@ namespace talk2Server
             }
             else // 채팅
             {
+                String aFile = @"D:\temp\source.png";
+                File.WriteAllBytes(aFile, e.Hub.Data2);
+                
                 _roomManager.SendToMyRoom(e.Hub);
                 _roomManager.SendToMyRoom(new ChatHub()
                 {

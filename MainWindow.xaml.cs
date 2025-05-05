@@ -1,10 +1,15 @@
-﻿using OTILib.Events;
+﻿using Microsoft.Win32;
+using OTILib.DB;
+using OTILib.Events;
 using OTILib.Handlers;
 using OTILib.Models;
 using OTILib.Sockets;
 using OTILib.Util;
+using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,6 +21,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using talkLib.Util;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace talk2Server
 {
@@ -42,6 +48,7 @@ namespace talk2Server
             btnStop.Click += BtnStop_Click;
         }
 
+        #region Column0
         private void ReLoadConnList()
         {
             lbxConn.Items.Clear();
@@ -180,8 +187,15 @@ namespace talk2Server
             }
             else // 채팅
             {
-                String aFile = @"D:\temp\source.png";
-                File.WriteAllBytes(aFile, e.Hub.Data2);
+                if (e.Hub.State == ChatState.File)
+                {
+                    if (!System.IO.Directory.Exists(e.Hub.Data[1].ToString()))
+                    {
+                        System.IO.Directory.CreateDirectory(e.Hub.Data[1].ToString());
+                    }
+                    System.IO.File.WriteAllBytes(e.Hub.Data[1].ToString() + e.Hub.Data[2].ToString(), e.Hub.Data2);
+
+                }
                 
                 _roomManager.SendToMyRoom(e.Hub);
                 _roomManager.SendToMyRoom(new ChatHub()
@@ -221,5 +235,111 @@ namespace talk2Server
             if (_roomManager == null) return;
             _roomManager.printDictionary();
         }
+        #endregion Column0
+
+        #region Column1
+        private HttpListener httpListener;
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            if (httpListener == null)
+            {
+                httpListener = new HttpListener();
+                httpListener.Prefixes.Add(string.Format("http://localhost:8686/"));
+                serverStart();
+            }
+        }
+
+        private void serverStart()
+        {
+            if (!httpListener.IsListening)
+            {
+                httpListener.Start();
+                Debug.WriteLine("server running...");
+
+                Task.Factory.StartNew(() =>
+                {
+                    while (httpListener != null)
+                    {
+                        HttpListenerContext context = this.httpListener.GetContext();
+
+                        string rawurl = context.Request.RawUrl;
+                        string httpmethod = context.Request.HttpMethod;
+
+                        // string result = "";
+
+                        // result += string.Format("httpmethod = {0}\r\n", httpmethod);
+                        // result += string.Format("rawurl = {0}\r\n", rawurl);
+
+                        Debug.WriteLine(httpmethod + " " + rawurl);
+                        // lbxRequest.Items.Add(httpmethod + " " + rawurl);
+
+                        // FileInfo fileInfo = new FileInfo("D:\\Autodown\\capture\\20220425_010943.png");
+                        // byte[] output = File.ReadAllBytes(fileInfo.FullName);
+                        // context.Response.OutputStream.Write(output, 0, output.Length);
+                        // context.Response.ContentType = "image/png";
+                        // context.Response.StatusCode = 201;
+                        // context.Response.Close();
+
+                        // if ("/image".Equals(rawurl))
+                        // {
+                        //     FileInfo fileInfo = new FileInfo("D:/temp/source.png");
+                        //     byte[] output = System.IO.File.ReadAllBytes(fileInfo.FullName);
+                        //     context.Response.OutputStream.Write(output, 0, output.Length);
+                        //     // context.Response.ContentType = "image/png";
+                        //     context.Response.StatusCode = 201;
+                        //     // context.Response.AddHeader("content-disposision", "attachment; filename=노네임.png;");
+                        // }
+                        // else if ("/file".Equals(rawurl))
+                        // {
+                        //     FileInfo fileInfo = new FileInfo("D:/Downloads/talkLib_20250420.zip");
+                        //     byte[] output = System.IO.File.ReadAllBytes(fileInfo.FullName);
+                        //     context.Response.OutputStream.Write(output, 0, output.Length);
+                        //     // context.Response.ContentType = "image/png";
+                        //     context.Response.StatusCode = 201;
+                        //     // context.Response.AddHeader("content-disposision", "attachment; filename=노네임.png;");
+                        // }
+                        if ("/file".Equals(rawurl.Substring(0,5)))
+                        {
+                            int fileNo = Int32.Parse(rawurl.Substring(6));
+                            string sql = @$"SELECT file_path, file_name
+                                              FROM talk.chatfile
+                                             WHERE file_no = {fileNo}";
+                            DataTable? dt = Query.select1(sql);
+                            string file_path = (string)dt.Rows[0]["file_path"];
+                            string file_name = (string)dt.Rows[0]["file_name"];
+
+                            FileInfo fileInfo = new FileInfo(file_path + file_name);
+                            byte[] output = System.IO.File.ReadAllBytes(fileInfo.FullName);
+                            context.Response.OutputStream.Write(output, 0, output.Length);
+                            // context.Response.ContentType = "image/png";
+                            context.Response.StatusCode = 201;
+                            // context.Response.AddHeader("content-disposision", "attachment; filename=노네임.png;");
+                        }
+                        context.Response.Close();
+                    }
+                });
+
+            }
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            image.Source = new BitmapImage(new Uri("http://localhost:8686/image"));
+        }
+
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "모든 파일|*.*";
+            saveFileDialog.ShowDialog();
+
+            if (saveFileDialog.FileName != "")
+            {
+                WebClient wc = new WebClient();
+                wc.DownloadFile("http://localhost:8686/file", saveFileDialog.FileName);
+            }
+        }
+        #endregion Colunm1
     }
 }

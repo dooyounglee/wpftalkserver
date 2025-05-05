@@ -7,17 +7,82 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Button x:Name="btnStart" Content="Button" HorizontalAlignment="Left" Height="80" Margin="80,64,0,0" VerticalAlignment="Top" Width="160"/>
-        <Button x:Name="btnStop" Content="Button" HorizontalAlignment="Left" Height="80" Margin="260,64,0,0" VerticalAlignment="Top" Width="160"/>
-        <ListBox x:Name="lbxConn" HorizontalAlignment="Left" Height="220" Margin="80,184,0,0" VerticalAlignment="Top" Width="180"/>
-        <ListBox x:Name="lbxClients" HorizontalAlignment="Left" Height="220" Margin="280,184,0,0" VerticalAlignment="Top" Width="180"/>
-        <ListBox x:Name="lbxMsg" HorizontalAlignment="Left" Height="220" Margin="480,184,0,0" VerticalAlignment="Top" Width="280"/>
-        <TextBox x:Name="IP" HorizontalAlignment="Left" Height="20" Margin="480,64,0,0" TextWrapping="Wrap" Text="127.0.0.1" VerticalAlignment="Top" Width="100"/>
-        <TextBox x:Name="Port" HorizontalAlignment="Left" Height="20" Margin="600,64,0,0" TextWrapping="Wrap" Text="8080" VerticalAlignment="Top" Width="40"/>
-        <Button Content="room상태" HorizontalAlignment="Left" Height="40" Margin="480,104,0,0" VerticalAlignment="Top" Width="78" Click="Button_Click"/>
-        <Label Content="로그인" HorizontalAlignment="Left" Height="20" Margin="80,164,0,0" VerticalAlignment="Top" Width="180" FontSize="9"/>
-        <Label Content="채팅방접속" HorizontalAlignment="Left" Height="20" Margin="280,164,0,0" VerticalAlignment="Top" Width="180" FontSize="9"/>
-        <Label Content="채팅" HorizontalAlignment="Left" Height="20" Margin="480,164,0,0" VerticalAlignment="Top" Width="280" FontSize="9"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="100" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" x:Name="btnStart" Content="Button"/>
+                <Button Grid.Column="1" x:Name="btnStop" Content="Button"/>
+                <Button Grid.Column="2"                  Content="room상태" Click="Button_Click"/>
+            </Grid>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Grid.Column="0" x:Name="IP" TextWrapping="Wrap" Text="127.0.0.1"/>
+                <TextBox Grid.Column="1" x:Name="Port" TextWrapping="Wrap" Text="8080"/>
+                
+            </Grid>
+            <Grid Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <ListBox Grid.Column="0" x:Name="lbxConn" />
+                    <ListBox Grid.Column="1" x:Name="lbxClients" />
+                </Grid>
+                <Grid Grid.Row="1">
+                    <ListBox x:Name="lbxMsg" />
+                </Grid>
+            </Grid>
+        </Grid>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Content="Http시작" Click="Button_Click_1"/>
+                <Button Grid.Column="1" Content="Image미리보기" Click="Button_Click_2"/>
+                <Button Grid.Column="2" Content="다운로드" Click="Button_Click_3"/>
+            </Grid>
+            <Grid Grid.Row="1">
+                <Image x:Name="image"/>
+            </Grid>
+            <Grid Grid.Row="2">
+                <ListBox x:Name="lbxRequest" />
+            </Grid>
+        </Grid>
 
     </Grid>
 </Window>
